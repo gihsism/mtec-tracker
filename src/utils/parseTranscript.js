@@ -176,6 +176,20 @@ export function analyzeProgress(courses, enrolledCourses = []) {
   const electives = allActive.filter(c => c.category === 'elective');
   const electiveCP = electives.reduce((sum, c) => sum + c.cp, 0);
 
+  // GPA: weighted average of graded courses (numeric grades only, Swiss 1-6 scale)
+  const gradedCourses = completed.filter(c => typeof c.grade === 'number' && c.cp > 0);
+  const totalGradeWeight = gradedCourses.reduce((sum, c) => sum + c.grade * c.cp, 0);
+  const totalGradeCP = gradedCourses.reduce((sum, c) => sum + c.cp, 0);
+  const gpa = totalGradeCP > 0 ? totalGradeWeight / totalGradeCP : null;
+
+  // Plagiarism course check (365-1170-00)
+  const plagiarismCompleted = courses.some(c => c.id === '365-1170-00' && !c.withdrawn);
+
+  // Extradepartmental CP: courses not from D-MTEC (not 363-xxxx or 365-xxxx)
+  const extradepartmentalCP = completed
+    .filter(c => !c.id.startsWith('363-') && !c.id.startsWith('365-'))
+    .reduce((sum, c) => sum + c.cp, 0);
+
   return {
     courses: completed,
     allCourses: courses,
@@ -200,6 +214,13 @@ export function analyzeProgress(courses, enrolledCourses = []) {
     thesis: {
       completed: courses.some(c => c.category === 'thesis' && !c.withdrawn),
     },
+    gpa: {
+      value: gpa,
+      gradedCP: totalGradeCP,
+      gradedCourses: gradedCourses.length,
+    },
+    plagiarismCompleted,
+    extradepartmentalCP,
     withdrawn: courses.filter(c => c.withdrawn),
   };
 }

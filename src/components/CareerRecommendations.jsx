@@ -858,35 +858,147 @@ export default function CareerRecommendations({ completedIds, enrolledIds, caree
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h4 className="text-sm font-semibold text-gray-700">Master's Thesis</h4>
-                  <span className="text-xs text-gray-400">{REQUIREMENTS.thesisCP} CP</span>
+                  <span className="text-xs text-gray-400">{REQUIREMENTS.thesisCP} CP · min. grade {REQUIREMENTS.thesisMinGrade}</span>
                 </div>
                 <ReqStatus met={analysis.thesis.completed} label="Pending" />
               </div>
             </div>
 
-            {/* Overall summary bar */}
-            <div className="px-5 py-3 bg-gray-50">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">
-                  {[totalMet, coreCPMet, areasMet, skillsMet, analysis.thesis.completed].filter(Boolean).length} of 5 requirements met
-                </span>
-                <div className="flex gap-1">
-                  {[
-                    { met: totalMet, label: 'Credits' },
-                    { met: coreCPMet, label: 'Core CP' },
-                    { met: areasMet, label: 'Areas' },
-                    { met: skillsMet, label: 'Skills' },
-                    { met: analysis.thesis.completed, label: 'Thesis' },
-                  ].map(r => (
-                    <span key={r.label} className={`text-[10px] px-1.5 py-0.5 rounded ${
-                      r.met ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-500'
-                    }`}>
-                      {r.label}
-                    </span>
-                  ))}
+            {/* 6. Coursework CP Range */}
+            {(() => {
+              const courseCP = grandTotal - REQUIREMENTS.thesisCP;
+              const inRange = courseCP >= REQUIREMENTS.minCourseCP && courseCP <= REQUIREMENTS.maxCourseCP;
+              const overMax = courseCP > REQUIREMENTS.maxCourseCP;
+              return (
+                <div className="px-5 py-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-gray-700">Coursework Credits</h4>
+                      <span className="text-xs text-gray-400">{REQUIREMENTS.minCourseCP}–{REQUIREMENTS.maxCourseCP} CP (excl. thesis)</span>
+                    </div>
+                    {overMax ? (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                        Exceeds max by {courseCP - REQUIREMENTS.maxCourseCP} CP
+                      </span>
+                    ) : (
+                      <ReqStatus met={inRange} label={`${REQUIREMENTS.minCourseCP - courseCP} CP needed`} />
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    {courseCP} CP planned from coursework. MTEC allows {REQUIREMENTS.minCourseCP}–{REQUIREMENTS.maxCourseCP} CP from courses plus {REQUIREMENTS.thesisCP} CP thesis.
+                  </p>
                 </div>
+              );
+            })()}
+
+            {/* 7. Extradepartmental Limit */}
+            {(() => {
+              const extraCP = analysis.extradepartmentalCP || 0;
+              // Also count planned extradepartmental
+              const plannedExtraCP = todoRows
+                .filter(r => !r.id.startsWith('363-') && !r.id.startsWith('365-'))
+                .reduce((s, r) => s + r.cp, 0);
+              const totalExtraCP = extraCP + plannedExtraCP;
+              const withinLimit = totalExtraCP <= REQUIREMENTS.maxExtradepartmental;
+              return totalExtraCP > 0 ? (
+                <div className="px-5 py-4">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-gray-700">Extradepartmental Courses</h4>
+                      <span className="text-xs text-gray-400">max. {REQUIREMENTS.maxExtradepartmental} CP from non-D-MTEC</span>
+                    </div>
+                    {withinLimit ? (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                        {totalExtraCP} / {REQUIREMENTS.maxExtradepartmental} CP
+                      </span>
+                    ) : (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700">
+                        Exceeds limit: {totalExtraCP} / {REQUIREMENTS.maxExtradepartmental} CP
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400">
+                    Courses outside D-MTEC (not 363-/365- prefixed) require pre-approval from Student Administration.
+                  </p>
+                </div>
+              ) : null;
+            })()}
+
+            {/* 8. Plagiarism Course */}
+            <div className="px-5 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-semibold text-gray-700">Avoiding Plagiarism Course</h4>
+                  <span className="text-xs text-gray-400">required before thesis</span>
+                </div>
+                <ReqStatus met={analysis.plagiarismCompleted} label="Not completed" />
               </div>
+              {!analysis.plagiarismCompleted && (
+                <p className="text-xs text-amber-600 mt-1">
+                  Complete <span className="font-medium">365-1170-00 Epigeum's Avoiding Plagiarism</span> (0 CP, online) in your 1st semester.
+                </p>
+              )}
             </div>
+
+            {/* 9. GPA */}
+            {analysis.gpa?.value && (
+              <div className="px-5 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-gray-700">Grade Point Average</h4>
+                    <span className="text-xs text-gray-400">weighted by CP, Swiss 1–6 scale</span>
+                  </div>
+                  <span className={`text-sm font-bold ${analysis.gpa.value >= 5.0 ? 'text-emerald-600' : analysis.gpa.value >= 4.0 ? 'text-blue-600' : 'text-red-600'}`}>
+                    {analysis.gpa.value.toFixed(2)}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-400 mt-1">
+                  Based on {analysis.gpa.gradedCourses} graded course{analysis.gpa.gradedCourses !== 1 ? 's' : ''} ({analysis.gpa.gradedCP} CP).
+                  {analysis.gpa.value < 4.0 && <span className="text-red-500 font-medium ml-1">Below passing threshold (4.0).</span>}
+                </p>
+              </div>
+            )}
+
+            {/* Graduation Readiness */}
+            {(() => {
+              const courseCP = grandTotal - REQUIREMENTS.thesisCP;
+              const courseCPOk = courseCP >= REQUIREMENTS.minCourseCP && courseCP <= REQUIREMENTS.maxCourseCP;
+              const checks = [
+                { label: 'Total 60 CP', met: totalMet },
+                { label: 'Coursework 48–53 CP', met: courseCPOk },
+                { label: `Core ≥${REQUIREMENTS.coreMinCP} CP`, met: coreCPMet },
+                { label: '5 of 6 areas', met: areasMet },
+                { label: `≥${REQUIREMENTS.skillTrainingMin} skill courses`, met: skillsMet },
+                { label: 'Plagiarism course', met: analysis.plagiarismCompleted },
+                { label: 'Thesis completed', met: analysis.thesis.completed },
+              ];
+              const allMet = checks.every(c => c.met);
+              const metCount = checks.filter(c => c.met).length;
+              return (
+                <div className={`px-5 py-4 ${allMet ? 'bg-emerald-50' : 'bg-gray-50'}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className={`text-sm font-semibold ${allMet ? 'text-emerald-800' : 'text-gray-700'}`}>
+                      {allMet ? 'Ready to Graduate' : 'Graduation Readiness'}
+                    </h4>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                      allMet ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {metCount} / {checks.length}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                    {checks.map(c => (
+                      <div key={c.label} className={`flex items-center gap-1.5 text-xs rounded px-2 py-1 ${
+                        c.met ? 'bg-emerald-100/60 text-emerald-700' : 'bg-white text-gray-500 border border-gray-200'
+                      }`}>
+                        <span className="flex-shrink-0">{c.met ? '\u2713' : '\u2022'}</span>
+                        <span>{c.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       );

@@ -9,12 +9,17 @@ export const CORE_AREAS = [
 
 export const REQUIREMENTS = {
   totalCP: 60,
+  minCourseCP: 48,       // min CP from coursework (excl. thesis)
+  maxCourseCP: 53,       // max CP from coursework (excl. thesis)
   coreMinCP: 15,
-  coreAreasRequired: 5, // must cover at least 5 of 6 areas
+  coreAreasRequired: 5,  // must cover at least 5 of 6 areas
   skillTrainingMin: 2,
   thesisCP: 12,
+  thesisMinGrade: 4.0,   // Swiss scale
   maxCoursesPerSemester: 8,
-  maxExtradepartmental: 6,
+  maxExtradepartmental: 6, // max CP from non-D-MTEC departments
+  plagiarismCourseId: '365-1170-00', // must complete in semester 1
+  semesters: 4,          // part-time program
 };
 
 // Career goal presets with keywords for matching free-text input
@@ -340,6 +345,7 @@ export const COURSE_SEMESTERS = {
   '365-1190-00': 'HS',
   '365-1174-00': 'FS',
   '365-1071-00': 'FS',
+  '365-1170-00': 'HS',   // Plagiarism course — required in semester 1
   // Elective courses
   '363-0393-00': 'HS',
   '363-1028-00': 'HS',
@@ -486,6 +492,7 @@ export const ALL_COURSES = (() => {
     { id: '365-1190-00', name: 'Climate Risk, Sustainable Business and Finance', cp: 2, type: 'skill' },
     { id: '365-1174-00', name: 'Machine Learning for Industrial Applications', cp: 2, type: 'skill' },
     { id: '365-1071-00', name: 'Course Abroad', cp: 3, type: 'skill' },
+    { id: '365-1170-00', name: "Epigeum's Avoiding Plagiarism", cp: 0, type: 'other' },
 
     // ---- Elective courses (MSc MTEC electives open to MAS) ----
     { id: '363-0393-00', name: 'Corporate Strategy', cp: 3, type: 'elective' },
