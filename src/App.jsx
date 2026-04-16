@@ -22,7 +22,7 @@ function loadSaved() {
   return null;
 }
 
-function saveToBrowser(courses, transcriptText, careerGoal, selectedTracks, enrolledCourses, planEdits, background) {
+function saveToBrowser(courses, transcriptText, careerGoal, selectedTracks, enrolledCourses, planEdits, background, autoRegisterCourses) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       courses,
@@ -32,6 +32,7 @@ function saveToBrowser(courses, transcriptText, careerGoal, selectedTracks, enro
       enrolledCourses: enrolledCourses || [],
       planEdits: planEdits || { removed: [], added: [] },
       background: background || '',
+      autoRegisterCourses: autoRegisterCourses || [],
       savedAt: Date.now(),
     }));
   } catch {}
@@ -53,6 +54,7 @@ function App() {
   const [isRestored, setIsRestored] = useState(false);
   const [importedText, setImportedText] = useState(null);
   const [importedEnrollments, setImportedEnrollments] = useState(null);
+  const [autoRegisterCourses, setAutoRegisterCourses] = useState([]);
 
   // On load: check URL hash for share/import, then localStorage
   useEffect(() => {
@@ -106,6 +108,7 @@ function App() {
       setSelectedTracks(saved.selectedTracks || []);
       setBackground(saved.background || '');
       setPlanEdits(saved.planEdits || { removed: [], added: [] });
+      setAutoRegisterCourses(saved.autoRegisterCourses || []);
       setIsRestored(true);
     }
   }, []);
@@ -123,7 +126,7 @@ function App() {
     setIsRestored(false);
     window.history.replaceState(null, '', window.location.pathname);
 
-    saveToBrowser(parsed, text, goal, tracks, enrolled, { removed: [], added: [] }, bg);
+    saveToBrowser(parsed, text, goal, tracks, enrolled, { removed: [], added: [] }, bg, []);
   };
 
   const handleReset = () => {
@@ -134,6 +137,7 @@ function App() {
     setEnrolledCourses([]);
     setBackground('');
     setPlanEdits({ removed: [], added: [] });
+    setAutoRegisterCourses([]);
     setIsShared(false);
     setIsRestored(false);
     window.history.replaceState(null, '', window.location.pathname);
@@ -149,7 +153,7 @@ function App() {
     setSelectedTracks(newTracks);
     setPlanEdits({ removed: [], added: [] });
     if (courses) {
-      saveToBrowser(courses, '', newGoal, newTracks, enrolledCourses, { removed: [], added: [] }, background);
+      saveToBrowser(courses, '', newGoal, newTracks, enrolledCourses, { removed: [], added: [] }, background, autoRegisterCourses);
     }
   };
 
@@ -157,14 +161,24 @@ function App() {
     setBackground(newBg);
     setPlanEdits({ removed: [], added: [] });
     if (courses) {
-      saveToBrowser(courses, '', careerGoal, selectedTracks, enrolledCourses, { removed: [], added: [] }, newBg);
+      saveToBrowser(courses, '', careerGoal, selectedTracks, enrolledCourses, { removed: [], added: [] }, newBg, autoRegisterCourses);
     }
   };
 
   const handlePlanEdit = (newEdits) => {
     setPlanEdits(newEdits);
     if (courses) {
-      saveToBrowser(courses, '', careerGoal, selectedTracks, enrolledCourses, newEdits, background);
+      saveToBrowser(courses, '', careerGoal, selectedTracks, enrolledCourses, newEdits, background, autoRegisterCourses);
+    }
+  };
+
+  const handleAutoRegisterToggle = (courseId) => {
+    const newList = autoRegisterCourses.includes(courseId)
+      ? autoRegisterCourses.filter(id => id !== courseId)
+      : [...autoRegisterCourses, courseId];
+    setAutoRegisterCourses(newList);
+    if (courses) {
+      saveToBrowser(courses, '', careerGoal, selectedTracks, enrolledCourses, planEdits, background, newList);
     }
   };
 
@@ -325,6 +339,8 @@ function App() {
               analysis={analysis}
               planEdits={planEdits}
               onPlanEdit={handlePlanEdit}
+              autoRegisterCourses={autoRegisterCourses}
+              onAutoRegisterToggle={handleAutoRegisterToggle}
             />
 
             {/* Timetable — shows for enrolled courses */}

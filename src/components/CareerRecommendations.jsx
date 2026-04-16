@@ -55,7 +55,7 @@ function getBackgroundCourseIds(backgroundText) {
   return ids;
 }
 
-export default function CareerRecommendations({ completedIds, enrolledIds, careerGoal, selectedTracks, background, analysis, planEdits = { removed: [], added: [] }, onPlanEdit }) {
+export default function CareerRecommendations({ completedIds, enrolledIds, careerGoal, selectedTracks, background, analysis, planEdits = { removed: [], added: [] }, onPlanEdit, autoRegisterCourses = [], onAutoRegisterToggle }) {
   const [showAddPicker, setShowAddPicker] = useState(false);
   const [addSearch, setAddSearch] = useState('');
 
@@ -553,7 +553,20 @@ export default function CareerRecommendations({ completedIds, enrolledIds, caree
                     {row.fills}
                   </span>
                 </td>
-                <td className="py-2 px-2 text-xs text-gray-500">{row.reason}</td>
+                <td className="py-2 px-2 text-xs text-gray-500 flex items-center gap-1.5">
+                  <span className="flex-1">{row.reason}</span>
+                  <button
+                    onClick={() => onAutoRegisterToggle?.(row.id)}
+                    title={autoRegisterCourses.includes(row.id) ? 'Remove from auto-registration' : 'Add to auto-registration'}
+                    className={`flex-shrink-0 text-xs px-1.5 py-0.5 rounded transition-colors ${
+                      autoRegisterCourses.includes(row.id)
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                        : 'bg-gray-100 text-gray-400 hover:bg-green-50 hover:text-green-600'
+                    }`}
+                  >
+                    {autoRegisterCourses.includes(row.id) ? '⚡ Auto' : '⚡'}
+                  </button>
+                </td>
               </tr>
             ))}
 
@@ -656,6 +669,40 @@ export default function CareerRecommendations({ completedIds, enrolledIds, caree
           </tfoot>
         </table>
       </div>
+
+      {/* Auto-Registration Panel */}
+      {autoRegisterCourses.length > 0 && (
+        <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-green-800 flex items-center gap-1.5">
+              ⚡ Auto-Registration ({autoRegisterCourses.length} courses)
+            </h4>
+            <button
+              onClick={() => {
+                const selected = todoRows
+                  .filter(r => autoRegisterCourses.includes(r.id))
+                  .map(r => ({ id: r.id, name: r.name }));
+                const json = JSON.stringify(selected, null, 2);
+                navigator.clipboard.writeText(json);
+                alert('Copied course list to clipboard!\n\nPaste it into auto-register config or save as ~/.eth-mystudies-session/auto-register-courses.json');
+              }}
+              className="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+            >
+              Copy Config
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {todoRows.filter(r => autoRegisterCourses.includes(r.id)).map(r => (
+              <span key={r.id} className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+                {r.name} <span className="text-green-500 font-mono">{r.id}</span>
+              </span>
+            ))}
+          </div>
+          <p className="text-xs text-green-600 mt-2">
+            These courses will be automatically registered when the enrollment period opens on myStudies.
+          </p>
+        </div>
+      )}
 
     </div>
 
