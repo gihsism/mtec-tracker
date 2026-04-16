@@ -683,12 +683,17 @@ export default function CareerRecommendations({ completedIds, enrolledIds, caree
                   .filter(r => autoRegisterCourses.includes(r.id))
                   .map(r => ({ id: r.id, name: r.name }));
                 const json = JSON.stringify(selected, null, 2);
-                navigator.clipboard.writeText(json);
-                alert('Copied course list to clipboard!\n\nPaste it into auto-register config or save as ~/.eth-mystudies-session/auto-register-courses.json');
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'auto-register-courses.json';
+                a.click();
+                URL.revokeObjectURL(url);
               }}
               className="text-xs px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
             >
-              Copy Config
+              Download Config
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -699,7 +704,7 @@ export default function CareerRecommendations({ completedIds, enrolledIds, caree
             ))}
           </div>
           <p className="text-xs text-green-600 mt-2">
-            These courses will be automatically registered when the enrollment period opens on myStudies.
+            These courses will be auto-registered when enrollment opens. Download the config and tell Claude: "set up auto registration for my courses".
           </p>
         </div>
       )}
