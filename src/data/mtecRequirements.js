@@ -42,6 +42,7 @@ export const CAREER_TRACKS = [
       { id: '365-1083-00', name: 'Leading the Technology-Driven Enterprise', cp: 2, type: 'elective', reason: 'Leading orgs where AI is the core product' },
       { id: '363-0389-00', name: 'Technology and Innovation Management', cp: 3, type: 'elective', reason: 'Managing AI/ML innovation pipeline' },
       { id: '363-1209-00', name: 'Building Agentic AI Systems for Industry Transformation', cp: 3, type: 'elective', reason: 'Hands-on agentic AI system design — core to modern AI roles' },
+      { id: '363-1191-00', name: '#AI4Impact: Machine Learning for Social Impact', cp: 3, type: 'elective', reason: 'Applied machine learning on real-world impact problems' },
     ],
   },
   {
@@ -101,6 +102,7 @@ export const CAREER_TRACKS = [
       { id: '363-0389-00', name: 'Technology and Innovation Management', cp: 3, type: 'elective', reason: 'Tech roadmap and product strategy' },
       { id: '363-0790-00', name: 'Technology Entrepreneurship', cp: 2, type: 'elective', reason: 'Building products from zero to one' },
       { id: '365-1183-00', name: 'Leveraging Generative AI for Sustainable Business Value', cp: 2, type: 'elective', reason: 'AI product opportunities' },
+      { id: '363-1207-00', name: 'Extended Reality for Value Creation in Businesses', cp: 6, type: 'elective', reason: 'Building immersive XR products and experiences' },
     ],
   },
   {
@@ -121,6 +123,7 @@ export const CAREER_TRACKS = [
       { id: '365-0347-00', name: 'Negotiation Skills', cp: 1, type: 'skill', reason: 'Fundraising and partnership deals' },
       { id: '363-0392-00', name: 'Strategic Management', cp: 3, area: 'strategy', type: 'core', reason: 'Strategic thinking for business building' },
       { id: '365-1192-00', name: 'Corporate Finance', cp: 3, area: 'financial', type: 'core', reason: 'Financial planning for startups' },
+      { id: '363-1208-00', name: 'Strategic Management of Intellectual Property', cp: 3, type: 'elective', reason: 'Protecting and monetizing IP as a founder' },
     ],
   },
   {
@@ -414,9 +417,12 @@ export const COURSE_SEMESTERS = {
   '363-0764-00': 'FS',
   '363-1029-00': 'FS',
   '363-1038-00': 'FS',
-  // New in HS2026 study plan (both listed in semester 3 = autumn)
+  // New in HS2026 (Autumn 2026) — offered in autumn semesters
   '363-1209-00': 'HS',
   '363-1208-00': 'HS',
+  '363-1191-00': 'HS',
+  '363-1207-00': 'HS',
+  '363-1205-00': 'HS',
 };
 
 /**
@@ -572,9 +578,12 @@ export const ALL_COURSES = (() => {
     { id: '363-1038-00', name: 'Sustainability Start-Up Seminar', cp: 3, type: 'elective' },
     { id: '363-0881-00', name: 'Semester Project Small', cp: 3, type: 'elective' },
     { id: '363-0883-00', name: 'Semester Project Large', cp: 6, type: 'elective' },
-    // ---- New in HS2026 study plan (Autumn Semester 2026, Version 3 June 2026) ----
+    // ---- New in HS2026 (Autumn 2026) — from live ETH course catalogue (2026W) ----
     { id: '363-1209-00', name: 'Building Agentic AI Systems for Industry Transformation', cp: 3, type: 'elective' },
     { id: '363-1208-00', name: 'Strategic Management of Intellectual Property', cp: 3, type: 'elective' },
+    { id: '363-1191-00', name: '#AI4Impact: Machine Learning for Social Impact', cp: 3, type: 'elective' },
+    { id: '363-1207-00', name: 'Extended Reality for Value Creation in Businesses', cp: 6, type: 'elective' },
+    { id: '363-1205-00', name: 'Managing Organisational Behaviour (MOB)', cp: 3, type: 'elective' },
   ];
 
   for (const c of extra) {
