@@ -41,6 +41,7 @@ export const CAREER_TRACKS = [
       { id: '363-0305-00', name: 'Empirical Methods in Management', cp: 3, area: 'quantitative', type: 'core', reason: 'Statistical methods essential for data roles' },
       { id: '365-1083-00', name: 'Leading the Technology-Driven Enterprise', cp: 2, type: 'elective', reason: 'Leading orgs where AI is the core product' },
       { id: '363-0389-00', name: 'Technology and Innovation Management', cp: 3, type: 'elective', reason: 'Managing AI/ML innovation pipeline' },
+      { id: '363-1209-00', name: 'Building Agentic AI Systems for Industry Transformation', cp: 3, type: 'elective', reason: 'Hands-on agentic AI system design — core to modern AI roles' },
     ],
   },
   {
@@ -60,6 +61,7 @@ export const CAREER_TRACKS = [
       { id: '363-0389-00', name: 'Technology and Innovation Management', cp: 3, type: 'elective', reason: 'Managing technology portfolio and R&D' },
       { id: '365-1141-00', name: 'Platform and Ecosystem Strategies', cp: 1, type: 'elective', reason: 'Building and scaling digital platforms' },
       { id: '365-1173-00', name: 'Fundamentals of Machine Learning for Executives', cp: 1, type: 'elective', reason: 'ML understanding for tech decision-making' },
+      { id: '363-1209-00', name: 'Building Agentic AI Systems for Industry Transformation', cp: 3, type: 'elective', reason: 'Architecting agentic AI systems for the enterprise' },
     ],
   },
   {
@@ -111,7 +113,7 @@ export const CAREER_TRACKS = [
       { id: '363-1082-00', name: 'Enabling Entrepreneurship: From Science to Startup', cp: 3, type: 'elective', reason: 'Full startup journey from idea to launch' },
       { id: '363-1077-00', name: 'Entrepreneurship', cp: 3, type: 'elective', reason: 'Core entrepreneurship frameworks' },
       { id: '363-0790-00', name: 'Technology Entrepreneurship', cp: 2, type: 'elective', reason: 'Tech-focused venture building' },
-      { id: '363-1028-00', name: 'Entrepreneurial Leadership', cp: 4, type: 'elective', reason: 'Leading as a founder/CEO' },
+      { id: '363-1028-00', name: 'Innovation Leadership Seminar (ILS)', cp: 4, type: 'elective', reason: 'Leading as a founder/CEO' },
       { id: '365-1097-00', name: 'Innovation Management', cp: 3, area: 'strategy', type: 'core', reason: 'Innovation frameworks for new ventures' },
       { id: '365-1187-00', name: 'Corporate Entrepreneurship and Innovation', cp: 3, area: 'strategy', type: 'core', reason: 'Intrapreneurship and corporate ventures' },
       { id: '365-1099-00', name: 'Design Thinking', cp: 2, type: 'skill', reason: 'Validating ideas through prototyping' },
@@ -230,7 +232,7 @@ export const CAREER_TRACKS = [
       { id: '363-0503-00', name: 'Principles of Microeconomics', cp: 3, area: 'economics', type: 'core', reason: 'Economic reasoning for business decisions' },
       { id: '365-1120-00', name: 'AI for Executives', cp: 3, area: 'quantitative', type: 'core', reason: 'Technology literacy for modern leaders' },
       { id: '363-0421-00', name: 'Management of Digital Transformation', cp: 3, area: 'info_ops', type: 'core', reason: 'Leading digital business transformation' },
-      { id: '363-1028-00', name: 'Entrepreneurial Leadership', cp: 4, type: 'elective', reason: 'Executive leadership and intrapreneurship' },
+      { id: '363-1028-00', name: 'Innovation Leadership Seminar (ILS)', cp: 4, type: 'elective', reason: 'Executive leadership and intrapreneurship' },
       { id: '365-0347-00', name: 'Negotiation Skills', cp: 1, type: 'skill', reason: 'Executive negotiation and influence' },
       { id: '363-0393-00', name: 'Corporate Strategy', cp: 3, type: 'elective', reason: 'Corporate portfolio and M&A strategy' },
       { id: '363-0861-00', name: 'Alliance Advantage', cp: 3, type: 'elective', reason: 'Strategic partnerships and alliances' },
@@ -412,6 +414,9 @@ export const COURSE_SEMESTERS = {
   '363-0764-00': 'FS',
   '363-1029-00': 'FS',
   '363-1038-00': 'FS',
+  // New in HS2026 study plan (both listed in semester 3 = autumn)
+  '363-1209-00': 'HS',
+  '363-1208-00': 'HS',
 };
 
 /**
@@ -496,7 +501,7 @@ export const ALL_COURSES = (() => {
 
     // ---- Elective courses (MSc MTEC electives open to MAS) ----
     { id: '363-0393-00', name: 'Corporate Strategy', cp: 3, type: 'elective' },
-    { id: '363-1028-00', name: 'Entrepreneurial Leadership', cp: 4, type: 'elective' },
+    { id: '363-1028-00', name: 'Innovation Leadership Seminar (ILS)', cp: 4, type: 'elective' },
     { id: '363-0861-00', name: 'Alliance Advantage', cp: 3, type: 'elective' },
     { id: '363-1060-00', name: 'Strategies for Sustainable Business', cp: 3, type: 'elective' },
     { id: '363-0448-00', name: 'Global Operations Strategy', cp: 3, type: 'elective' },
@@ -567,6 +572,9 @@ export const ALL_COURSES = (() => {
     { id: '363-1038-00', name: 'Sustainability Start-Up Seminar', cp: 3, type: 'elective' },
     { id: '363-0881-00', name: 'Semester Project Small', cp: 3, type: 'elective' },
     { id: '363-0883-00', name: 'Semester Project Large', cp: 6, type: 'elective' },
+    // ---- New in HS2026 study plan (Autumn Semester 2026, Version 3 June 2026) ----
+    { id: '363-1209-00', name: 'Building Agentic AI Systems for Industry Transformation', cp: 3, type: 'elective' },
+    { id: '363-1208-00', name: 'Strategic Management of Intellectual Property', cp: 3, type: 'elective' },
   ];
 
   for (const c of extra) {
