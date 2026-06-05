@@ -172,6 +172,20 @@ function App() {
     }
   };
 
+  const handleRemoveEnrolled = (courseId) => {
+    const newEnrolled = enrolledCourses.filter(c => c.id !== courseId);
+    setEnrolledCourses(newEnrolled);
+    setAnalysis(analyzeProgress(courses, newEnrolled));
+    saveToBrowser(courses, '', careerGoal, selectedTracks, newEnrolled, planEdits, background, autoRegisterCourses);
+  };
+
+  const handleRemoveCourse = (courseId) => {
+    const newCourses = courses.filter(c => c.id !== courseId);
+    setCourses(newCourses);
+    setAnalysis(analyzeProgress(newCourses, enrolledCourses));
+    saveToBrowser(newCourses, '', careerGoal, selectedTracks, enrolledCourses, planEdits, background, autoRegisterCourses);
+  };
+
   const handleAutoRegisterToggle = (courseId) => {
     const newList = autoRegisterCourses.includes(courseId)
       ? autoRegisterCourses.filter(id => id !== courseId)
@@ -329,6 +343,39 @@ function App() {
               </span>
             </button>
 
+            {/* Enrolled this semester — removable */}
+            {enrolledCourses.length > 0 && (
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700">
+                    Enrolled this semester
+                    <span className="ml-2 text-xs font-normal text-gray-400">
+                      {enrolledCourses.length} course{enrolledCourses.length !== 1 ? 's' : ''} ·{' '}
+                      {enrolledCourses.reduce((s, c) => s + c.cp, 0)} CP in progress
+                    </span>
+                  </h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {enrolledCourses.map(course => (
+                    <span
+                      key={course.id}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-sm text-blue-800"
+                    >
+                      {course.name}
+                      <span className="text-xs text-blue-500">{course.cp} CP</span>
+                      <button
+                        onClick={() => handleRemoveEnrolled(course.id)}
+                        title="Remove this enrollment"
+                        className="ml-0.5 text-blue-400 hover:text-red-500 font-bold text-sm leading-none"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Unified course plan table */}
             <CareerRecommendations
               completedIds={new Set(analysis.courses.filter(c => !c.withdrawn).map(c => c.id))}
@@ -355,7 +402,7 @@ function App() {
                 {enrolledCourses.length > 0 ? `, ${enrolledCourses.length} enrolled` : ''})
               </summary>
               <div className="px-4 pb-4">
-                <CourseTable courses={analysis.allCourses} />
+                <CourseTable courses={analysis.allCourses} onRemove={handleRemoveCourse} />
               </div>
             </details>
           </>

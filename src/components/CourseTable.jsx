@@ -1,4 +1,4 @@
-export default function CourseTable({ courses, title }) {
+export default function CourseTable({ courses, title, onRemove }) {
   if (!courses.length) return null;
 
   return (
@@ -13,6 +13,7 @@ export default function CourseTable({ courses, title }) {
               <th className="text-center py-2 px-3 text-gray-600 font-medium">Grade</th>
               <th className="text-center py-2 px-3 text-gray-600 font-medium">CP</th>
               <th className="text-center py-2 px-3 text-gray-600 font-medium">Semester</th>
+              {onRemove && <th className="py-2 px-3"></th>}
             </tr>
           </thead>
           <tbody>
@@ -33,6 +34,17 @@ export default function CourseTable({ courses, title }) {
                 </td>
                 <td className="py-2 px-3 text-center font-medium text-gray-700">{c.cp || '-'}</td>
                 <td className="py-2 px-3 text-center text-gray-500 text-xs">{c.session}</td>
+                {onRemove && (
+                  <td className="py-2 px-3 text-center">
+                    <button
+                      onClick={() => onRemove(c.id)}
+                      title="Remove this course"
+                      className="text-gray-300 hover:text-red-500 font-bold text-sm leading-none"
+                    >
+                      &times;
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
