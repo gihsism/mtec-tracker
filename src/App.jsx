@@ -6,6 +6,7 @@ import CareerRecommendations from './components/CareerRecommendations';
 import CareerGoalEditor from './components/CareerGoalEditor';
 import ShareButton from './components/ShareButton';
 import Timetable from './components/Timetable';
+import CourseCatalogue from './components/CourseCatalogue';
 import { parseTranscript, analyzeProgress, decodeFromSharing, parseEnrollmentText } from './utils/parseTranscript';
 import { ALL_COURSES } from './data/mtecRequirements';
 import { REQUIREMENTS } from './data/mtecRequirements';
@@ -17,7 +18,9 @@ function loadSaved() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw);
-    if (data.courses && data.courses.length > 0) return data;
+    const hasCourses = data.courses && data.courses.length > 0;
+    const hasEnrolled = data.enrolledCourses && data.enrolledCourses.length > 0;
+    if (hasCourses || hasEnrolled) return data;
   } catch {}
   return null;
 }
@@ -55,6 +58,7 @@ function App() {
   const [importedText, setImportedText] = useState(null);
   const [importedEnrollments, setImportedEnrollments] = useState(null);
   const [autoRegisterCourses, setAutoRegisterCourses] = useState([]);
+  const [view, setView] = useState('progress'); // 'progress' | 'catalogue'
 
   // On load: check URL hash for share/import, then localStorage
   useEffect(() => {
@@ -101,15 +105,18 @@ function App() {
     const saved = loadSaved();
     if (saved) {
       const enrolled = saved.enrolledCourses || [];
-      setCourses(saved.courses);
+      const hasCourses = saved.courses && saved.courses.length > 0;
       setEnrolledCourses(enrolled);
-      setAnalysis(analyzeProgress(saved.courses, enrolled));
+      if (hasCourses) {
+        setCourses(saved.courses);
+        setAnalysis(analyzeProgress(saved.courses, enrolled));
+        setIsRestored(true);
+      }
       setCareerGoal(saved.careerGoal || '');
       setSelectedTracks(saved.selectedTracks || []);
       setBackground(saved.background || '');
       setPlanEdits(saved.planEdits || { removed: [], added: [] });
       setAutoRegisterCourses(saved.autoRegisterCourses || []);
-      setIsRestored(true);
     }
   }, []);
 
@@ -172,6 +179,21 @@ function App() {
     }
   };
 
+  const handleToggleEnrolled = (courseId) => {
+    const exists = enrolledCourses.some(c => c.id === courseId);
+    let newEnrolled;
+    if (exists) {
+      newEnrolled = enrolledCourses.filter(c => c.id !== courseId);
+    } else {
+      const course = ALL_COURSES.find(c => c.id === courseId);
+      if (!course) return;
+      newEnrolled = [...enrolledCourses, course];
+    }
+    setEnrolledCourses(newEnrolled);
+    if (courses) setAnalysis(analyzeProgress(courses, newEnrolled));
+    saveToBrowser(courses || [], '', careerGoal, selectedTracks, newEnrolled, planEdits, background, autoRegisterCourses);
+  };
+
   const handleRemoveEnrolled = (courseId) => {
     const newEnrolled = enrolledCourses.filter(c => c.id !== courseId);
     setEnrolledCourses(newEnrolled);
@@ -200,34 +222,64 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">MAS MTEC Progress Tracker</h1>
-            <p className="text-sm text-gray-500">ETH Zurich — Management, Technology, and Economics</p>
-          </div>
-          {courses && (
-            <div className="flex gap-2">
-              <ShareButton courses={courses} />
-              <button
-                onClick={handleReset}
-                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
-              >
-                Update
-              </button>
-              <button
-                onClick={handleClearData}
-                className="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors"
-              >
-                Clear Data
-              </button>
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">MAS MTEC Progress Tracker</h1>
+              <p className="text-sm text-gray-500">ETH Zurich — Management, Technology, and Economics</p>
             </div>
-          )}
+            {view === 'progress' && courses && (
+              <div className="flex gap-2">
+                <ShareButton courses={courses} />
+                <button
+                  onClick={handleReset}
+                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={handleClearData}
+                  className="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-colors"
+                >
+                  Clear Data
+                </button>
+              </div>
+            )}
+          </div>
+          <nav className="mt-3 flex gap-1">
+            {[
+              { id: 'progress', label: 'My Progress' },
+              { id: 'catalogue', label: 'Course Catalogue' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setView(tab.id)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  view === tab.id
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        {!courses ? (
-          <TranscriptInput onParse={handleParse} importedText={importedText} importedEnrollments={importedEnrollments} />
+        {view === 'catalogue' ? (
+          <CourseCatalogue
+            enrolledIds={new Set(enrolledCourses.map(c => c.id))}
+            completedIds={courses ? new Set(courses.filter(c => !c.withdrawn).map(c => c.id)) : new Set()}
+            onToggleEnrolled={handleToggleEnrolled}
+          />
+        ) : !courses ? (
+          <TranscriptInput
+            onParse={handleParse}
+            importedText={importedText}
+            importedEnrollments={importedEnrollments || (enrolledCourses.length ? enrolledCourses.map(c => c.id) : null)}
+          />
         ) : (
           <>
             {isShared && (

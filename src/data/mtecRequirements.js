@@ -596,6 +596,34 @@ export const ALL_COURSES = (() => {
 })();
 
 /**
+ * Course IDs actually offered in Autumn Semester 2026 (HS2026 / 2026W),
+ * per the live ETH course catalogue (studiengangAbschnittId=122807, fetched June 2026).
+ * Used by the catalogue view to mark which courses you can register for this autumn.
+ */
+export const OFFERED_HS2026 = new Set([
+  '363-0301-00', '363-0302-00', '363-0305-00', '363-0311-00', '363-0341-00',
+  '363-0387-00', '363-0389-00', '363-0392-00', '363-0393-00', '363-0403-00',
+  '363-0404-00', '363-0421-00', '363-0425-00', '363-0445-00', '363-0453-00',
+  '363-0503-00', '363-0541-00', '363-0565-00', '363-0711-00', '363-0790-00',
+  '363-0861-00', '363-0887-00', '363-1004-00', '363-1017-00', '363-1028-00',
+  '363-1051-00', '363-1082-00', '363-1163-00', '363-1191-00', '363-1205-00',
+  '363-1207-00', '363-1208-00', '363-1209-00', '365-0347-00', '365-1019-00',
+  '365-1053-00', '365-1059-00', '365-1083-00', '365-1099-00', '365-1142-00',
+  '365-1143-00', '365-1149-00', '365-1166-00', '365-1181-00', '365-1183-00',
+  '365-1187-00', '365-1189-00', '365-1190-00', '365-1191-00', '365-1195-00',
+  '365-1196-00',
+]);
+
+/**
+ * Courses listed for HS2026 but flagged "Does not take place this semester"
+ * in the ETH catalogue — shown but not registrable this autumn.
+ */
+export const HS2026_NOT_RUNNING = new Set([
+  '365-1099-00', // Design Thinking
+  '365-1142-00', // Understanding Human Behavior
+]);
+
+/**
  * Match a free-text career goal to relevant tracks.
  * Returns track objects with scores sorted by relevance.
  * Matches against keywords, label, and description.
